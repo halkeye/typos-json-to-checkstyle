@@ -1,8 +1,8 @@
 use clap::Parser;
 use serde::Deserialize;
-use std::fmt;
 use std::io::prelude::*;
 use std::io::BufReader;
+use checkstyle_formatter::{Container,ErrorFile, ErrorPiece};
 
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
@@ -20,20 +20,6 @@ pub struct Typo {
     byte_offset: i32,
     typo: String,
     corrections: Vec<String>,
-}
-
-impl fmt::Display for Typo {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "::error file={},line={},col={}::{} should be {}",
-            self.path,
-            self.line_num,
-            self.byte_offset,
-            self.typo,
-            itertools::join(self.corrections.iter().map(|s| format!("`{}`", s)), ", "),
-        )
-    }
 }
 
 #[derive(Deserialize)]
@@ -67,14 +53,32 @@ fn main() -> Result<(), Error> {
 
     let reader = BufReader::new(input);
 
+    let mut error_files = Vec::new();
+
     for line in reader.lines() {
         let unwrapped_line = line.unwrap();
         let msg: Message = serde_json::from_str(&unwrapped_line)?;
         match msg {
             Message::BinaryFile(_) => {}
-            Message::Typo(typo) => println!("{}", typo),
+            Message::Typo(typo) => {
+                let piece = ErrorPiece {
+                    column: typo.byte_offset as u32,
+                    line: typo.line_num as u32,
+                    severity: "error".to_owned(),
+                    source: "crate-ci/typos".to_owned(),
+                    message: format!( "{} should be {}", typo.typo, itertools::join(typo.corrections.iter().map(|s| format!("`{}`", s)), ", ")),
+                };
+                error_files.push(ErrorFile{
+                    name: typo.path,
+                    error_pieces: vec![piece]
+                });
+
+            }
         }
     }
+
+    let checkstyle = Container { error_files: error_files };
+    println!("{}", checkstyle.to_xml().unwrap());
 
     Ok(())
 }

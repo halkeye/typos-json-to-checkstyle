@@ -6,7 +6,7 @@ pipeline {
     stage('Build') {
       steps {
         sh 'cargo build'
-        archiveArtifacts 'target/debug/typos-json-to-github-annotations'
+        archiveArtifacts 'target/debug/typos-json-to-checkstyle'
       }
     }
 
