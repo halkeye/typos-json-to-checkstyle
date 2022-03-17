@@ -97,7 +97,7 @@ pipeline {
           ./github-release release --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${TAG_NAME}"
 
           # Uploading the artifacts into github
-          ./github-release release --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${PROJECT_NAME}-${TAG_NAME}.zip" --file "target/release/${PROJECT_NAME}"
+          ./github-release upload --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${PROJECT_NAME}-${TAG_NAME}-$(arch)" --file "target/release/${PROJECT_NAME}"
 
           cargo publish
         '''
