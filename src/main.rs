@@ -77,7 +77,7 @@ fn main() -> Result<(), Error> {
         }
     }
 
-    let checkstyle = Container { error_files: error_files };
+    let checkstyle = Container { error_files };
     println!("{}", checkstyle.to_xml().unwrap());
 
     Ok(())

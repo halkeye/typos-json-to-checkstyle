@@ -6,7 +6,20 @@ pipeline {
     stage('Build') {
       steps {
         sh 'cargo build'
-        archiveArtifacts 'target/debug/typos-json-to-checkstyle'
+        archiveArtifacts 'target/debug/typos-checkstyle'
+      }
+    }
+
+    stage('Check') {
+      steps {
+        sh '''
+          cargo check --message-format json | tee cargocheck.json || true
+        '''
+      }
+      post {
+        always {
+          recordIssues(tools: [cargo(pattern: 'cargocheck.json')])
+        }
       }
     }
 
@@ -16,32 +29,35 @@ pipeline {
       }
     }
 
-    stage('Clippy') {
+    stage('Lint') {
       steps {
         sh '''
           rustup component add clippy
-          cargo clippy --all
+          cargo clippy --all-targets -- -D warnings
         '''
       }
     }
 
-    stage('Rustfmt') {
+    stage('Format') {
       steps {
         sh '''
-          cargo check --message-format json || true
+          cargo fmt -- --check
         '''
       }
-      /*post {*/
-      /*  always {*/
-      /*    recordIssues tools: [cargo()]*/
-      /*  }*/
-      /*}*/
     }
 
     stage('Doc') {
       steps {
         // Not sure what to do with this yet
         sh 'cargo doc'
+      }
+    }
+
+    stage('Release Dry Run') {
+      steps {
+        sh '''
+          cargo publish --dry-run
+        '''
       }
     }
   }
