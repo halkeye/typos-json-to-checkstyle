@@ -7,18 +7,6 @@ pipeline {
     GITHUB_ORGANIZATION = "halkeye"
     GITHUB_REPO = "typos-json-to-checkstyle"
     PROJECT_NAME = "typos-checkstyle"
-    CHANGELOG = gitChangelog returnType: 'STRING',
-              from: [type: 'REF', value: env.GIT_COMMIT],
-              to: [type: 'REF', value: 'main'],
-              template: """
-                # Git Changelog
-
-                {{#commits}}
-               - {{#eachCommitScope .}} **{{.}}** {{/eachCommitScope}} {{{commitDescription .}}} ({{hash}})
-                {{/commits}}
-
-                // Template is documented below!
-              """
   }
 
   stages {
