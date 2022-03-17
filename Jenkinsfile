@@ -76,28 +76,51 @@ pipeline {
       }
     }
 
-    stage('Release') {
-      // when { branch 'main' }
+    stage('Create github release') {
       when { buildingTag() }
       environment {
-        CARGO_REGISTRY_TOKEN = credentials('halkeye-crates')
         GITHUB = credentials('github-halkeye')
         GITHUB_TOKEN = "${env.GITHUB.split(":")[1]}"
       }
       steps {
         sh '''
-          cargo login
-
           curl -qsL https://github.com/github-release/github-release/releases/download/v0.10.0/linux-amd64-github-release.bz2 | bzip2 -d > github-release && chmod 755 ./github-release
+          curl -qsL https://github.com/taiki-e/parse-changelog/releases/download/v0.4.7/parse-changelog-x86_64-unknown-linux-musl.tar.gz | tar xvzf - parse-changelog
 
           # delete the existing release (if exists)
           ./github-release delete --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" || true
 
           # Creating a new release in github
-          ./github-release release --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${TAG_NAME}"
+          ./github-release release --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${TAG_NAME}" --description "$(./parse-changelog)"
 
           # Uploading the artifacts into github
           ./github-release upload --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${PROJECT_NAME}-${TAG_NAME}-$(arch)" --file "target/release/${PROJECT_NAME}"
+        '''
+      }
+    }
+
+    stage('Upload binaries to github') {
+      when { buildingTag() }
+      environment {
+        GITHUB = credentials('github-halkeye')
+        GITHUB_TOKEN = "${env.GITHUB.split(":")[1]}"
+      }
+      steps {
+        sh '''
+          ./github-release upload --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${PROJECT_NAME}-${TAG_NAME}-$(arch)" --file "target/release/${PROJECT_NAME}"
+        '''
+      }
+    }
+
+    stage('Release to cargo') {
+      // when { branch 'main' }
+      when { buildingTag() }
+      environment {
+        CARGO_REGISTRY_TOKEN = credentials('halkeye-crates')
+      }
+      steps {
+        sh '''
+          cargo login
 
           cargo publish
         '''

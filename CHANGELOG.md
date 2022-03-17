@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased] - ReleaseDate
 
+- Purely CI fixes release
+
 ## [0.1.1] - 2022-03-17
 
 ### CI Tasks
