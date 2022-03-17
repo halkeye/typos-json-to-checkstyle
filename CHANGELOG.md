@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 <!-- next-header -->
 
 ## [Unreleased] - ReleaseDate
+
 ## [0.1.1] - 2022-03-17
 
 ### CI Tasks
