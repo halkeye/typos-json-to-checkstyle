@@ -61,5 +61,19 @@ pipeline {
         '''
       }
     }
+
+    stage('Release') {
+      // when { branch 'main' }
+      when { buildingTag() }
+      environment {
+        CARGO_REGISTRY_TOKEN = credentials('halkeye-crates')
+      }
+      steps {
+        sh '''
+          cargo login
+          cargo publish
+        '''
+      }
+    }
   }
 }
