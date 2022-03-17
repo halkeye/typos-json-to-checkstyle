@@ -41,6 +41,7 @@ pipeline {
     stage('Format') {
       steps {
         sh '''
+          rustup component add rustfmt
           cargo fmt -- --check
         '''
       }
