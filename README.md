@@ -11,3 +11,9 @@ Get latest version from github releases
 ```
  typos --format json | ./target/debug/typos-checkstyle - > checkstyle.xml
 ```
+
+## Release
+
+```
+cargo release [patch|minor|major]
+```
