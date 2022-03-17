@@ -86,13 +86,14 @@ pipeline {
       when { buildingTag() }
       environment {
         CARGO_REGISTRY_TOKEN = credentials('halkeye-crates')
-        GITHUB_TOKEN = credentials('github-halkeye').split(":").get(1)
+        GITHUB = credentials('github-halkeye')
+        GITHUB_TOKEN = "${env.GITHUB.split(":")[1]}"
       }
       steps {
         sh '''
-          curl -qsL https://github.com/github-release/github-release/releases/download/v0.10.0/linux-amd64-github-release.bz2 | bzip2 -d > github-release && chmod 755 ./github-release
           cargo login
-          cargo publish
+
+          curl -qsL https://github.com/github-release/github-release/releases/download/v0.10.0/linux-amd64-github-release.bz2 | bzip2 -d > github-release && chmod 755 ./github-release
 
           # delete the existing release
           github-release delete --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}"
@@ -103,7 +104,7 @@ pipeline {
           # Uploading the artifacts into github
           github-release release --user "${GITHUB_ORGANIZATION}" --repo "${GITHUB_REPO}" --tag "${TAG_NAME}" --name "${PROJECT_NAME}-${TAG_NAME}.zip" --file "target/release/${PROJECT_NAME}"
 
-
+          cargo publish
         '''
       }
     }
