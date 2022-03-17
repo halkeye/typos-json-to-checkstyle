@@ -3,6 +3,13 @@ pipeline {
     docker { image 'rust:latest' }
   }
 
+  options {
+    timeout(time: 60, unit: 'MINUTES')
+    ansiColor('xterm')
+    disableConcurrentBuilds(abortPrevious: true)
+    buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '5', numToKeepStr: '5')
+  }
+
   environment {
     GITHUB_ORGANIZATION = "halkeye"
     GITHUB_REPO = "typos-json-to-checkstyle"
