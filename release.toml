@@ -6,6 +6,7 @@ consolidate-commits = true
 consolidate-pushes = true
 allow-branch = ["main"]
 pre-release-replacements = [
+  {file="README.md", search="download.v.*.typos-checkstyle-v.*-x86_64", replace="download/{{tag_name}}/typos-checkstyle-{{tag_name}}-x86_64"},
   {file="CHANGELOG.md", search="Unreleased", replace="{{version}}"},
   {file="CHANGELOG.md", search="\\.\\.\\.HEAD", replace="...{{tag_name}}", exactly=1},
   {file="CHANGELOG.md", search="ReleaseDate", replace="{{date}}"},
