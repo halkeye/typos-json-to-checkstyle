@@ -1,8 +1,8 @@
+use checkstyle_formatter::{Container, ErrorFile, ErrorPiece};
 use clap::Parser;
 use serde::Deserialize;
 use std::io::prelude::*;
 use std::io::BufReader;
-use checkstyle_formatter::{Container,ErrorFile, ErrorPiece};
 
 type Error = Box<dyn std::error::Error + Send + Sync + 'static>;
 
@@ -66,13 +66,16 @@ fn main() -> Result<(), Error> {
                     line: typo.line_num as u32,
                     severity: "error".to_owned(),
                     source: "crate-ci/typos".to_owned(),
-                    message: format!( "{} should be {}", typo.typo, itertools::join(typo.corrections.iter().map(|s| format!("`{}`", s)), ", ")),
+                    message: format!(
+                        "{} should be {}",
+                        typo.typo,
+                        itertools::join(typo.corrections.iter().map(|s| format!("`{}`", s)), ", ")
+                    ),
                 };
-                error_files.push(ErrorFile{
+                error_files.push(ErrorFile {
                     name: typo.path,
-                    error_pieces: vec![piece]
+                    error_pieces: vec![piece],
                 });
-
             }
         }
     }
