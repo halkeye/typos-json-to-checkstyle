@@ -27,3 +27,8 @@ checkstyle_formatter = "1.0.2"    # checkstyle formatter.
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+[dev-dependencies]
+cargo-dist = "0.28.0"
+clippy = "0.0.302"
+rustfmt = "0.10.0"
