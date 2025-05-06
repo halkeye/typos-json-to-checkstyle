@@ -9,7 +9,7 @@ Get latest version from github releases
 ## Usages
 
 ```bash
-curl -qsL https://github.com/halkeye/typos-json-to-checkstyle/releases/download/v0.1.1/typos-checkstyle-v0.1.1-x86_64 > typos-checkstyle && chmod 0755 typos-checkstyle
+curl -qsL https://github.com/halkeye/typos-json-to-checkstyle/releases/download/v0.2.0/typos-checkstyle-v0.2.0-x86_64 > typos-checkstyle && chmod 0755 typos-checkstyle
 typos --format json | ./typos-checkstyle - > checkstyle.xml
 ```
 
