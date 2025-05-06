@@ -30,5 +30,6 @@ lto = "thin"
 
 [dev-dependencies]
 cargo-dist = "0.28.0"
+cargo-release = "0.25.18"
 clippy = "0.0.302"
 rustfmt = "0.10.0"
